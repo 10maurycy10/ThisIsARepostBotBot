@@ -32,10 +32,6 @@ print("Connecting to reddit")
 
 r = praw.Reddit(client_id=config['reddit_client_id'], client_secret=config['reddit_client_secret'], username=config["reddit_username"], password=config["reddit_passwd"], user_agent=config["reddit_ua"])
 
-message = "The poster of the post/comment I am replying to is a karma farming repost bot, please downvote and report.\n\nIf you want to know how I know this, PM me."
-
-#bot_list = ["Jazminedg","Trinitysjm","Luna_Mcmahan346","Sariah_jb","Sylviafx","Nuria_Vega54"]
-
 is_post_flaged = {}
 
 for post in flaged_posts:
