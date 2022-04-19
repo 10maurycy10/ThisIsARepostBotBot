@@ -9,7 +9,7 @@
 	"reddit_client_secret": "NoYou_Cant_HaveMy_ClientSecret",
 	"reddit_username": "YouNameHere",
 	"reddit_passwd": "YourPasswordHere",
-	"reddit_ua": "A script to flag automated reposts.",
+	"reddit_ua": "python:ThisIsARepostBotBot:0.1.0 (by NullVoidPointer) (Please DO NOT ban me if this script improperly flags a post, contact the owner of the account the script is logged in as)",
 
 	"repost_reply": "The poster of the post/comment I am replying to is a karma farming repost bot, please downvote and report.\n\nIf you want to know how I know this, PM me.",
 	"repost_report": true
