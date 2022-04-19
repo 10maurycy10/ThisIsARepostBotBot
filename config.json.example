@@ -1,0 +1,16 @@
+{
+	"db_passwd": "ThisIsWhereThePasswordToYourDatabaseGoes",
+	"db_username": "mz",
+	"db_host": "localhost",
+	"db_port": 3306,
+	"db_dbname": "repost",
+
+	"reddit_client_id": "ThisIsNot-MyRealId",
+	"reddit_client_secret": "NoYou_Cant_HaveMy_ClientSecret",
+	"reddit_username": "YouNameHere",
+	"reddit_passwd": "YourPasswordHere",
+	"reddit_ua": "A script to flag automated reposts.",
+
+	"repost_reply": "The poster of the post/comment I am replying to is a karma farming repost bot, please downvote and report.\n\nIf you want to know how I know this, PM me.",
+	"repost_report": true
+}
