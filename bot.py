@@ -43,7 +43,7 @@ for bot in bot_list:
     bot_handle = r.redditor(bot);
     print("Reporting " + bot_handle.name)
     for post in bot_handle.submissions.new():
-        if not(str(post) in is_post_flaged):
+        if not(str(post) in is_post_flaged) and not post.locked:
             print("Flaging : " + str(post))
             if config["repost_reply"] is not None:
                 post.reply(config["repost_reply"]);
@@ -51,6 +51,7 @@ for bot in bot_list:
                 post.report("Spam")
             dbc = db.cursor()
             dbc.execute("insert into reported_posts (id) values (?)",  (str(post),))
+            db.commit()
             print("Shortlink : " + post.shortlink)
             is_post_flaged[str(post)] = True
         else:
