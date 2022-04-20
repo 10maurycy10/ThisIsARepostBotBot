@@ -27,15 +27,18 @@ This uses an MySQL/mariadb database to store lists of bot users and keep track o
 You can create the required table structure like this:
 
 ```sql
-create database repost
-use repost
-create table bots (username: varchar(60))
-create table reported_posts (id: varchar(10))
+create database repost;
+use repost;
+create table bots (username: varchar(60));
+create table reported_posts (id: varchar(10));
+create index id on reported_posts (id);
 ```
 
 ## Configuration
 
 The main configuration file is "config.json", a template file is provided, "config.json.exmple".
+
+You will have to add the usernames of the repostbots into the ``bots`` table.
 
 ## Running
 
