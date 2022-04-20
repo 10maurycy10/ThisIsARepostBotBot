@@ -29,8 +29,9 @@ You can create the required table structure like this:
 ```sql
 create database repost;
 use repost;
-create table bots (username: varchar(60));
+create table bots (username: varchar(60)); -- Add known bot accounts in here
 create table reported_posts (id: varchar(10));
+create table sub_blacklist (name: varchar(20)); -- Add subreddits without the 'r/' that you do *not* want to post on.
 create index id on reported_posts (id);
 ```
 

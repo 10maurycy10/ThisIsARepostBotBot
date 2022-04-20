@@ -2,11 +2,26 @@ import praw
 import json
 import mariadb
 
+# color escape codes
+
+RED = '\x1b[31m'
+
+BLUE = '\x1b[94m'
+
+GREEN = '\x1b[32m'
+
+RESET = '\x1b[0m'
+
+BOLD = '\x1b[1m'
+
+BELL = '\a'
+
+# Load configug file
 config = {}
 with open("config.json", "r") as conffile:
     config = json.loads(conffile.read())
 
-print("Connecting to DB")
+print("[initalization] Connecting to DB")
 
 db = mariadb.connect(
     user=config["db_username"],
@@ -15,20 +30,25 @@ db = mariadb.connect(
     port=config["db_port"],
     database=config["db_dbname"]
 )
-
-print("Feching bot list")
+print("[initalization] Feching bot list")
 
 dbc = db.cursor()
 dbc.execute("select username from bots")
 bot_list = [i[0] for i in dbc]
 
-print("Feching list of reported posts")
+print("[initalization] Feching subreddit black list")
+
+dbc = db.cursor()
+dbc.execute("select name from sub_blacklist")
+sub_black_list = [i[0] for i in dbc]
+
+print("[initalization] Feching list of reported posts")
 
 dbc = db.cursor()
 dbc.execute("select id from reported_posts")
 flaged_posts = [i[0] for i in dbc]
 
-print("Connecting to reddit")
+print("[initalization] Connecting to reddit")
 
 r = praw.Reddit(client_id=config['reddit_client_id'], client_secret=config['reddit_client_secret'], username=config["reddit_username"], password=config["reddit_passwd"], user_agent=config["reddit_ua"])
 
@@ -37,14 +57,17 @@ is_post_flaged = {}
 for post in flaged_posts:
     is_post_flaged[post] = True
 
-print(is_post_flaged)
+ignore_sub = {}
+
+for sub in sub_black_list:
+    ignore_sub[sub] = True
 
 for bot in bot_list:
     bot_handle = r.redditor(bot);
-    print("Reporting " + bot_handle.name)
+    print("[bot] Reporting " + bot_handle.name)
     for post in bot_handle.submissions.new():
-        if not(str(post) in is_post_flaged) and not post.locked:
-            print("Flaging : " + str(post))
+        if not(str(post) in is_post_flaged) and (not post.locked) and (not str(post.subreddit) in ignore_sub):
+            print("[userflager] Flaging : " + str(post))
             if config["repost_reply"] is not None:
                 post.reply(config["repost_reply"]);
             if config["repost_report"]:
@@ -52,10 +75,12 @@ for bot in bot_list:
             dbc = db.cursor()
             dbc.execute("insert into reported_posts (id) values (?)",  (str(post),))
             db.commit()
-            print("Shortlink : " + post.shortlink)
+            print("[userflager]" + GREEN + " Flaged post " + post.shortlink + ", In sub " + str(post.subreddit) + RESET);
             is_post_flaged[str(post)] = True
         else:
-            print("Skiping " + str(post));
+            print("[userflager]" + RED +  " Skiping " + str(post) + " In sub " + str(post.subreddit) + RESET)
 
 db.commit() 
 db.close()
+
+print("[bot] done" + BELL)
