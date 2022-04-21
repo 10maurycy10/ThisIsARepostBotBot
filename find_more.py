@@ -39,7 +39,7 @@ print("[initalization] Feching posts")
 
 dbc = db.cursor()
 dbc.execute("select username from nonbots;")
-nonbots = [i for i in dbc]
+nonbots = [i[0] for i in dbc]
 
 print(nonbots)
 
@@ -68,8 +68,8 @@ for (pid,) in parent:
     c = r.submission(pid[3:]);
     try:
         newbot = c.author.name
-        if (not newbot in bots) and (not newbot in nonbots):
-            print(BOLD + GREEN + "NEW BOT CANDIDATE " + c.author.name + RESET)
+        if (not (newbot in bots)) and (not (newbot in nonbots)):
+            print(BOLD + GREEN + "NEW BOT CANDIDATE '" + c.author.name + "'" + RESET)
             if askuserifbot(newbot):
                 dbc = db.cursor()
                 dbc.execute("insert into bots (username, notes) values (?, ?);", (newbot, "AUTOADD"))
