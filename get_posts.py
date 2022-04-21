@@ -38,49 +38,31 @@ bot_list = [i[0] for i in dbc]
 
 print(bot_list)
 
-print("[initalization] Feching subreddit black list")
+print("[initalization] Feching list of known [psts")
 
 dbc = db.cursor()
-dbc.execute("select name from sub_blacklist")
-sub_black_list = [i[0] for i in dbc]
-
-print("[initalization] Feching list of reported posts")
-
-dbc = db.cursor()
-dbc.execute("select id from reported_posts")
-flaged_posts = [i[0] for i in dbc]
+dbc.execute("select id from known_posts")
+known_posts = [i[0] for i in dbc]
 
 print("[initalization] Connecting to reddit")
 
 r = praw.Reddit(client_id=config['reddit_client_id'], client_secret=config['reddit_client_secret'], username=config["reddit_username"], password=config["reddit_passwd"], user_agent=config["reddit_ua"])
 
-is_post_flaged = {}
+is_post_known = {}
 
-for post in flaged_posts:
-    is_post_flaged[post] = True
-
-ignore_sub = {}
-
-for sub in sub_black_list:
-    ignore_sub[sub] = True
+for post in known_posts:
+    is_post_known[post] = True
 
 for bot in bot_list:
     bot_handle = r.redditor(bot);
     print("[bot] Reporting " + bot_handle.name)
     for post in bot_handle.submissions.new():
-        if not(str(post) in is_post_flaged) and (not post.locked) and (not str(post.subreddit) in ignore_sub):
-            print("[userflager] Flaging : " + str(post))
-            if config["repost_reply"] is not None:
-                post.reply(config["repost_reply"]);
-            if config["repost_report"]:
-                post.report("Spam")
+        if not str(post) in is_post_known:
+            print("[postscraper]" + GREEN + "grabing post" + RESET)
             dbc = db.cursor()
-            dbc.execute("insert into reported_posts (id) values (?)",  (str(post),))
-            db.commit()
-            print("[userflager]" + GREEN + " Flaged post " + post.shortlink + ", In sub " + str(post.subreddit) + RESET);
-            is_post_flaged[str(post)] = True
+            dbc.execute("insert into known_posts (title, subreddit, username, id) values (?, ?, ?, ?);", (post.title, str(post.subreddit), post.author.name, post.id))
         else:
-            print("[userflager]" + RED +  " Skiping " + str(post) + " In sub " + str(post.subreddit) + RESET)
+            print("[postscraper]" + RED +  " Skiping " + str(post) + " In sub " + str(post.subreddit) + RESET)
 
 db.commit() 
 db.close()
