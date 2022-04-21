@@ -2,7 +2,7 @@
 #
 # create table nonbots (username VARCHAR(60) );
 # create table bots (username VARCHAR(60), notes VARCHAR(256));
-# create table known_comments (parent VARCHAR(10), id VARCHAR(10));
+# create table known_comments (parent VARCHAR(10), id VARCHAR(10), hasbeenuserscrape BOOL)
 
 import praw
 import json
@@ -44,8 +44,8 @@ nonbots = [i[0] for i in dbc]
 print(nonbots)
 
 dbc = db.cursor()
-dbc.execute("select parent id from known_comments;")
-parent = [i for i in dbc]
+dbc.execute("select parent, id, hasbeenuserscraped from known_comments;")
+parent = [i for i in dbc if not i[2]]
 
 dbc = db.cursor()
 dbc.execute("select username from bots;")
@@ -64,24 +64,30 @@ def askuserifbot(uname):
     else:
         return a1 & a2
 
-for (pid,) in parent:
+for (pid,cid,hasbeenscraped) in parent:
     c = r.submission(pid[3:]);
+    
     try:
-        newbot = c.author.name
-        if (not (newbot in bots)) and (not (newbot in nonbots)):
-            print(BOLD + GREEN + "NEW BOT CANDIDATE '" + c.author.name + "'" + RESET)
-            if askuserifbot(newbot):
-                dbc = db.cursor()
-                dbc.execute("insert into bots (username, notes) values (?, ?);", (newbot, "AUTOADD"))
-                bots.append(newbot)
-                db.commit()
-            else:
-                dbc = db.cursor()
-                dbc.execute("insert into nonbots (username) values (?);", (newbot,))
-                db.commit()
-                nonbots.append(newbot)
+        # Check for deleted author account
+        if c.author != None:
+            newbot = c.author.name
+            if (not (newbot in bots)) and (not (newbot in nonbots)):
+                print(BOLD + GREEN + "NEW BOT CANDIDATE '" + c.author.name + "'" + RESET)
+                if askuserifbot(newbot):
+                    dbc = db.cursor()
+                    dbc.execute("insert into bots (username, notes) values (?, ?);", (newbot, "AUTOADD"))
+                    bots.append(newbot)
+                    db.commit()
+                else:
+                    dbc = db.cursor()
+                    dbc.execute("insert into nonbots (username) values (?);", (newbot,))
+                    db.commit()
+                    nonbots.append(newbot)
+        dbc = db.cursor()
+        dbc.execute("update known_comments set hasbeenuserscraped=1 where id=?;", (cid,))
 
     except Exception as e:
+        print(pid,cid);
         print(RED + " error " + str(e) + RESET)
 
 

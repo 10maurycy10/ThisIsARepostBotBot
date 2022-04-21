@@ -70,13 +70,16 @@ for bot in bot_list:
     for post in bot_handle.submissions.new():
         if not(str(post) in is_post_flaged) and (not post.locked) and (not str(post.subreddit) in ignore_sub):
             print("[userflager] Flaging : " + str(post))
-            if config["repost_reply"] is not None:
-                post.reply(config["repost_reply"]);
-            if config["repost_report"]:
-                post.report("Spam")
-            dbc = db.cursor()
-            dbc.execute("insert into reported_posts (id) values (?)",  (str(post),))
-            db.commit()
+            try:
+                if config["repost_reply"] is not None:
+                    post.reply(config["repost_reply"]);
+                if config["repost_report"]:
+                    post.report("Spam")
+                dbc = db.cursor()
+                dbc.execute("insert into reported_posts (id) values (?)",  (str(post),))
+                db.commit()
+            except Exception as e:
+                print(BOLD + RED+ "error flaging post, ratelimit or ban " + str(e) + RESET)
             print("[userflager]" + GREEN + " Flaged post " + post.shortlink + ", In sub " + str(post.subreddit) + RESET);
             is_post_flaged[str(post)] = True
         else:
