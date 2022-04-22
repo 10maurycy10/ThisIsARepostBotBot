@@ -44,50 +44,31 @@ nonbots = [i[0] for i in dbc]
 print(nonbots)
 
 dbc = db.cursor()
-dbc.execute("select parent, id, hasbeenuserscraped from known_comments;")
-parent = [i for i in dbc if not i[2]]
-
-dbc = db.cursor()
 dbc.execute("select username from bots;")
 bots = [i[0] for i in dbc]
+
+dbc = db.cursor()
+dbc.execute("select username from known_accounts;")
+knownaccounts = [i[0] for i in dbc]
 
 print("[initalization] Connecting to reddit")
 
 r = praw.Reddit(client_id=config['reddit_client_id'], client_secret=config['reddit_client_secret'], username=config["reddit_username"], password=config["reddit_passwd"], user_agent=config["reddit_ua"])
 
-def askuserifbot(uname):
-    print(BOLD + "Link https://reddit.com/u/" + uname + RESET)
-    a1 = input("Is this user a bot [y/n]") == 'y'
-    a2 =input("Is this user a bot [y/n]") == 'y'
-    if a1 is not a2:
-        return askuserifbot(uname)
-    else:
-        return a1 & a2
-
-for (pid,cid,hasbeenscraped) in parent:
-    c = r.submission(pid[3:]);
-    
+for botusername in bots:
+    c = r.redditor(botusername);
     try:
-        # Check for deleted author account
-        if c.author != None:
-            newbot = c.author.name
-            if (not (newbot in bots)) and (not (newbot in nonbots)):
-                print(BOLD + GREEN + "NEW BOT CANDIDATE '" + c.author.name + "'" + RESET)
-                if askuserifbot(newbot):
+        for botpost in c.submissions.new():
+            for comment in botpost.comments:
+                if not comment.author.name in knownaccounts:
+                    new_account = comment.author;
+                    knownaccounts.append(new_account.name)
                     dbc = db.cursor()
-                    dbc.execute("insert into bots (username, notes) values (?, ?);", (newbot, "AUTOADD"))
-                    bots.append(newbot)
-                    db.commit()
-                else:
-                    dbc = db.cursor()
-                    dbc.execute("insert into nonbots (username) values (?);", (newbot,))
-                    db.commit()
-                    nonbots.append(newbot)
-        dbc = db.cursor()
-        dbc.execute("update known_comments set hasbeenuserscraped=1 where id=?;", (cid,))
-
+                    dbc.execute("insert into known_accounts (username, id, creationtime) values (?, ?, ?)", (new_account.name,new_account.id,new_account.created_utc));
+                    print(GREEN + "get new account! " + new_account.name + RESET);
+                    db.commit();
     except Exception as e:
-        print(pid,cid);
+        print(botusername);
         print(RED + " error " + str(e) + RESET)
 
 
