@@ -1,5 +1,7 @@
 # ThisIsARepostBotBot
 
+![Rank on botranks](https://img.shields.io/badge/dynamic/json?label=Rank%20on%20https%3A%2F%2Fbotranks.com%2F&query=rank&suffix=th&url=https%3A%2F%2Fbotranks.com%2Fapi%2Fgetrank%2FThisIsARepostBotBot) ![Karma on reddit](https://img.shields.io/badge/dynamic/json?label=bot%20karma&query=data.total_karma&url=https%3A%2F%2Fwww.reddit.com%2Fuser%2Fthisisarepostbotbot%2Fabout.json)
+
 > So you found a repost bot, now what?
 
 This is a bot to reply to all posts of a repost bot with a message urging users to report and down vote, It can also report posts. (You may want a burner account for this.)
