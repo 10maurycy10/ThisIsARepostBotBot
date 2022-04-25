@@ -30,10 +30,11 @@ You can create the required table structure like this:
 create database repost;
 use repost;
 create table bots (username: varchar(60), notes: varchar(256)); -- Add known bot accounts in here
-create table reported_posts (id: varchar(10));
-create table sub_blacklist (name: varchar(20)); -- Add subreddits without the 'r/' that you do *not* want to post on.
+create table reported_posts (id: varchar(10)); -- ids of posts that the bot has reported
 create index id on reported_posts (id);
-create table known_comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64), hasbeenuserscraped BOOL);
+create table sub_blacklist (name: varchar(20)); -- Add subreddits without the 'r/' that you do *not* want to post on.
+create table known_comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64), hasbeenuserscraped BOOL); -- comments made by botx
+create table comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64));
 create table nonbots (username VARCHAR(64));
 ```
 
@@ -49,15 +50,15 @@ just ``python3 bot.py``
 
 # Other scripts in repo
 
-## get_comments.py
+## scrapers/get_bot_comments.py
 
 Pulls the comments of all bots from reddit.
 
-## get_posts.py
+## scrapers/get_bot_posts.py
 
 Pulls the posts of all bots from reddit.
 
-## find_more.py
+## corelation/find_more.py
 
 Attempts to use the comment db to find other bot users running on the same instance, Promping the user to check if they are bots.
 
