@@ -38,19 +38,6 @@ db = mariadb.connect(
 print("[initalization] Feching posts")
 
 dbc = db.cursor()
-dbc.execute("select username from nonbots;")
-nonbots = [i[0] for i in dbc]
-
-dbc = db.cursor()
-dbc.execute("select username from bots;")
-bots = [i[0] for i in dbc]
-print(nonbots)
-
-dbc = db.cursor()
-dbc.execute("select username from bots;")
-bots = [i[0] for i in dbc]
-
-dbc = db.cursor()
 dbc.execute("select username from known_accounts;")
 knownaccounts = [i[0] for i in dbc]
 
@@ -63,21 +50,20 @@ knownaccounts_dict = {}
 for i in knownaccounts:
     knownaccounts_dict[i] = True
 
-for botusername in (nonbots + bots)[::-1]:
-    c = r.redditor(botusername);
+for user in knownaccounts:
+    c = r.redditor(user);
     try:
-        for botpost in c.submissions.new(limit=20):
-            for comment in botpost.comments:
-                if not comment.author.name in knownaccounts_dict:
-                    new_account = comment.author;
-                    knownaccounts.append(new_account.name)
-                    knownaccounts_dict[new_account.name] = True
-                    dbc = db.cursor()
-                    dbc.execute("insert into known_accounts (username, id, creationtime) values (?, ?, ?)", (new_account.name,new_account.id,new_account.created_utc));
-                    print(GREEN + "get new account! " + new_account.name + RESET);
-                    db.commit();
+        for comment in c.comments.new(limit=20):
+            if not comment.parent().author.name in knownaccounts_dict:
+                new_account = comment.parent().author;
+                knownaccounts.append(new_account.name)
+                knownaccounts_dict[new_account.name] = True
+                dbc = db.cursor()
+                dbc.execute("insert into known_accounts (username, id, creationtime) values (?, ?, ?)", (new_account.name,new_account.id,new_account.created_utc));
+                print(GREEN + "get new account! " + new_account.name + RESET);
+                db.commit();
     except Exception as e:
-        print(botusername);
+        print(user);
         print(RED + " error " + str(e) + RESET)
 
 
