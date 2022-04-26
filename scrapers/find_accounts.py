@@ -50,7 +50,7 @@ knownaccounts_dict = {}
 for i in knownaccounts:
     knownaccounts_dict[i] = True
 
-for user in knownaccounts:
+for user in knownaccounts[::-1]:
     c = r.redditor(user);
     try:
         for comment in c.comments.new(limit=20):

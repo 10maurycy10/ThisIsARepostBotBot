@@ -56,7 +56,7 @@ for post in known_ids:
 for bot in bot_list:
     bot_handle = r.redditor(bot);
     print("[bot] scraping " + bot_handle.name)
-    for comment in bot_handle.comments.new():
+    for comment in bot_handle.comments.new(limit=500):
         if not str(comment) in is_id_known:
             print("[comment]" + GREEN + "grabing comment" + RESET)
             dbc = db.cursor()

@@ -31,7 +31,7 @@ You can create the required table structure like this:
 ```sql
 create database repost;
 use repost;
-create table bots (username: varchar(60), notes: varchar(256)); -- Add known bot accounts in here
+create table bots (username: varchar(60), notes: varchar(256), dontflag BOOL, mladd BOOL); -- Add known bot accounts in here
 create table reported_posts (id: varchar(10)); -- ids of posts that the bot has reported
 create index id on reported_posts (id);
 create table sub_blacklist (name: varchar(20)); -- Add subreddits without the 'r/' that you do *not* want to post on.
@@ -64,4 +64,6 @@ Pulls the posts of all bots from reddit.
 
 Attempts to use the comment db to find other bot users running on the same instance, Promping the user to check if they are bots.
 
-This requires ``get_comments.py`` to be run.
+This requires ``get_comments.py`` to be run
+
+

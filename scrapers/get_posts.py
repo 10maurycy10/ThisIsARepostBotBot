@@ -56,14 +56,16 @@ for post in known_posts:
 for bot in bot_list:
     bot_handle = r.redditor(bot);
     print("[bot] Reporting " + bot_handle.name)
-    for post in bot_handle.submissions.new():
-        if not str(post) in is_post_known:
-            print("[postscraper]" + GREEN + "grabing post" + RESET)
-            dbc = db.cursor()
-            dbc.execute("insert into posts (title, subreddit, username, id, time) values (?, ?, ?, ?, ?);", (post.title, str(post.subreddit), post.author.name, post.id, post.created_utc))
-        else:
-            print("[postscraper]" + RED +  " Skiping " + str(post) + " In sub " + str(post.subreddit) + RESET)
-
+    try:
+        for post in bot_handle.submissions.new():
+            if not str(post) in is_post_known:
+                print("[postscraper]" + GREEN + "grabing post" + RESET)
+                dbc = db.cursor()
+                dbc.execute("insert into posts (title, subreddit, username, id, time) values (?, ?, ?, ?, ?);", (post.title, str(post.subreddit), post.author.name, post.id, post.created_utc))
+            else:
+                print("[postscraper]" + RED +  " Skiping " + str(post) + " In sub " + str(post.subreddit) + RESET)
+    except:
+        print("stuff")
 db.commit() 
 db.close()
 
