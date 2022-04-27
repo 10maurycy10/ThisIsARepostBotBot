@@ -1,4 +1,3 @@
-from joblib import dump, load
 import praw
 import json
 import mariadb
@@ -59,7 +58,7 @@ def douser(name):
             count = count + 1
             total_score = total_score + score
         if count > 0:
-            score = total_score / count
+            score = total_score / count - ((20-min(count, 20))/20)
             if score > 0.4:
                 print(BOLD + GREEN + "FOUND LIKLEY BOT!! https://www.reddit.com/u/" + name + " score " + str(score) + RESET)
                 dbc = db.cursor()
