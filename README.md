@@ -31,13 +31,14 @@ You can create the required table structure like this:
 ```sql
 create database repost;
 use repost;
-create table bots (username: varchar(60), notes: varchar(256), dontflag BOOL, mladd BOOL); -- Add known bot accounts in here
+create table bots (username: varchar(60). creationtime INT, notes: varchar(256), dontflag BOOL, mladd BOOL); -- Add known bot accounts in here
 create table reported_posts (id: varchar(10)); -- ids of posts that the bot has reported
 create index id on reported_posts (id);
 create table sub_blacklist (name: varchar(20)); -- Add subreddits without the 'r/' that you do *not* want to post on.
-create table known_comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64), hasbeenuserscraped BOOL); -- comments made by botx
-create table comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64));
+create table known_comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64), subreddit VARCHAR(64), hasbeenuserscraped BOOL); -- comments made by bots
+create table comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64), subreddit);
 create table nonbots (username VARCHAR(64));
+create table known_accounts (username VARCHAR(64), id VARCHAR(10), creationtime INT, foundthemall BOOL, suspected_bot BOOL)
 ```
 
 ## Configuration
@@ -48,9 +49,17 @@ You will have to add the usernames of the repostbots into the ``bots`` table.
 
 ## Running
 
-just ``python3 bot.py``
+just ``python3 bot/bot.py``
 
 # Other scripts in repo
+
+## scrapers/find_accounts.py
+
+Add more users to the known_accounts table
+
+## scrapers/get_comments.py
+
+Gets comments from normal users
 
 ## scrapers/get_bot_comments.py
 
@@ -66,4 +75,11 @@ Attempts to use the comment db to find other bot users running on the same insta
 
 This requires ``get_comments.py`` to be run
 
+## corelation/nlp_tf.py
+
+Uses the database of comments and bot comments to construct a classifer
+
+## one_script_to_find_them_all_and_in_the_darkness_bind_them.py
+
+Requires the classifyer from ``nlp_tf.py``, Finds bot fully automaticly
 
