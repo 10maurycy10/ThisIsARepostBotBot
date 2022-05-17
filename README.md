@@ -35,8 +35,8 @@ create table bots (username: varchar(60), notes: varchar(256), dontflag BOOL, ml
 create table reported_posts (id: varchar(10)); -- ids of posts that the bot has reported
 create index id on reported_posts (id);
 create table sub_blacklist (name: varchar(20)); -- Add subreddits without the 'r/' that you do *not* want to post on.
-create table known_comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64), hasbeenuserscraped BOOL); -- comments made by botx
-create table comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64));
+create table known_comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64), hasbeenuserscraped BOOL, subreddit VARCHAR(60)); -- comments made by botx
+create table comments (id VARCHAR(10), text TEXT, parent VARCHAR(10), username VARCHAR(64), subreddit VARCHAR(60));
 create table nonbots (username VARCHAR(64));
 ```
 

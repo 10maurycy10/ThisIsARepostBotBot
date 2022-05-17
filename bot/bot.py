@@ -68,29 +68,32 @@ for bot in bot_list:
     reportedposts = 0
     bot_handle = r.redditor(bot);
     print("[bot] Reporting " + bot_handle.name)
-    for post in bot_handle.submissions.new():
-        if not(str(post) in is_post_flaged) and (not post.locked) and (not str(post.subreddit) in ignore_sub):
-            print("[userflager] Flaging : " + str(post))
-            reportedposts = reportedposts + 1
-            try:
-                if config["repost_reply"] is not None:
-                    post.reply(config["repost_reply"].format(bot));
-                if config["repost_report"]:
-                    post.report("Spam")
-                dbc = db.cursor()
-                dbc.execute("insert into reported_posts (id) values (?)",  (str(post),))
-                db.commit()
-            except Exception as e:
-                print(BOLD + RED+ "error flaging post, ratelimit or ban " + str(e) + RESET)
-            if config["maxuserflags"] != None:
-                if config["maxuserflags"] <= reportedposts:
-                    print("[userflaged] Bailing on " + str(bot));
-                    break;
-
-            print("[userflager]" + GREEN + " Flaged post " + post.shortlink + ", In sub " + str(post.subreddit) + RESET);
-            is_post_flaged[str(post)] = True
-        else:
-            print("[userflager]" + RED +  " Skiping " + str(post) + " In sub " + str(post.subreddit) + RESET)
+    try:
+        for post in bot_handle.submissions.new(limit = 5):
+            if not(str(post) in is_post_flaged) and (not post.locked) and (not str(post.subreddit) in ignore_sub):
+                print("[userflager] Flaging : " + str(post))
+                reportedposts = reportedposts + 1
+                try:
+                    if config["repost_reply"] is not None:
+                        post.reply(config["repost_reply"].format(bot));
+                    if config["repost_report"]:
+                        post.report("Spam")
+                    dbc = db.cursor()
+                    dbc.execute("insert into reported_posts (id) values (?)",  (str(post),))
+                    db.commit()
+                except Exception as e:
+                    print(BOLD + RED+ "error flaging post, ratelimit or ban " + str(e) + RESET)
+                if config["maxuserflags"] != None:
+                    if config["maxuserflags"] <= reportedposts:
+                        print("[userflaged] Bailing on " + str(bot));
+                        break;
+    
+                print("[userflager]" + GREEN + " Flaged post " + post.shortlink + ", In sub " + str(post.subreddit) + RESET);
+                is_post_flaged[str(post)] = True
+            else:
+                print("[userflager]" + RED +  " Skiping " + str(post) + " In sub " + str(post.subreddit) + RESET)
+    except Exception as e:
+        print(BOLD + RED + str(e) + RESET)
 
 db.commit() 
 db.close()
