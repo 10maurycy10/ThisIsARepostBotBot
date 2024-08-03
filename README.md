@@ -1,26 +1,6 @@
 # ThisIsARepostBotBot
 
-![Rank on botranks](https://img.shields.io/badge/dynamic/json?label=Rank%20on%20https%3A%2F%2Fbotranks.com%2F&query=rank&suffix=th&url=https%3A%2F%2Fbotranks.com%2Fapi%2Fgetrank%2FThisIsARepostBotBot) ![Karma on reddit](https://img.shields.io/badge/dynamic/json?label=bot%20karma&query=data.total_karma&url=https%3A%2F%2Fwww.reddit.com%2Fuser%2Fthisisarepostbotbot%2Fabout.json)
-
-> So you found a repost bot, now what?
-
-This is a bot to reply to all posts of a repost bot with a message urging users to report and down vote, It can also report posts. (You may want a burner account for this.)
-
-## Requirements
-
-### reddit
-
-A reddit account with a added script.
-
-To add a script to your reddit account, go to https://old.reddit.com/prefs/apps, click "create (another) app", select "personal use script", and enter "http://localhost/" as the redirect uri.
-
-(Keep the page open, you will need the client secret and client id values to configure the script)
-
-### pip
-
-- praw
-
-- mariadb
+This is a loose collection of scripts intended to semi-automaticly built a list of bot accounts by either trying to detect bot like comments, or by tracking inter-bot interactions.
 
 ### DB
 
@@ -47,11 +27,11 @@ The main configuration file is "config.json", a template file is provided, "conf
 
 You will have to add the usernames of the repostbots into the ``bots`` table.
 
-## Running
+# Scripts in repo
 
-just ``python3 bot/bot.py``
+## python3 bot/bot.py
 
-# Other scripts in repo
+Comment on bot posts warning about the bot.
 
 ## scrapers/find_accounts.py
 
